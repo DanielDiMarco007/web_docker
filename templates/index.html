@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro de Aprendices</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
+</head>
+<header>    
+
+<h1><center>Registro de Aprendices ADSO</h1>
+
+</header>
+<body>
+
+<form action="/registrar" method="POST">
+
+    <input
+        type="text"
+        name="nombre"
+        placeholder="Nombre Completo"
+        required>
+
+    <input
+        type="text"
+        name="documento"
+        placeholder="Documento"
+        required>
+
+    <input
+        type="text"
+        name="ficha"
+        placeholder="Ficha"
+        required>
+
+    <button type="submit">
+        Guardar
+    </button>
+
+</form>
+
+<hr>
+
+<table>
+
+    <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Documento</th>
+        <th>Ficha</th>
+        <th>Fecha</th>
+    </tr>
+
+    {% for a in aprendices %}
+
+    <tr>
+
+        <td>{{ a[0] }}</td>
+        <td>{{ a[1] }}</td>
+        <td>{{ a[2] }}</td>
+        <td>{{ a[3] }}</td>
+        <td>{{ a[4] }}</td>
+
+    </tr>
+
+    {% endfor %}
+
+</table>
+
+</body>
+</html>
