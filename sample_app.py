@@ -11,6 +11,8 @@ def conectar():
         database="adso_db"
     )
 
+
+
 @app.route('/')
 def index():
     conexion = conectar()
@@ -22,7 +24,11 @@ def index():
     cursor.close()
     conexion.close()
 
-    return render_template("index.html", aprendices=aprendices)
+    return render_template(
+        "index.html",
+        aprendices=aprendices,
+        mensaje=" Conexión exitosa a la base de datos!!!"
+    )
 
 @app.route('/registrar', methods=['POST'])
 def registrar():
