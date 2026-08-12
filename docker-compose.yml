@@ -1,23 +1,21 @@
 services:
 
-  nginx:
-    image: nginx:alpine
-    container_name: proxy_nginx
+  nginx-proxy-manager:
+    image: jc21/nginx-proxy-manager:latest
+    container_name: proxy-manager
+    restart: always
 
     ports:
-      - "80:80"
+      - "80:80"      # HTTP
+      - "81:81"      # Administración
+      - "443:443"    # HTTPS
 
     volumes:
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
-    depends_on:
-    - app-backend:
-      conditions:
-         - service_healthy
-         
+      - ./npm_data:/data
+      - ./npm_letsencrypt:/etc/letsencrypt
+
     networks:
       - red-cba
-
-
 
 
   servidor-bd:
@@ -43,6 +41,13 @@ services:
     networks:
       - red-cba
 
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+
   app-backend:
     image: dimarco007/app-backend:v2
     container_name: app-backend
@@ -50,9 +55,8 @@ services:
     build: .
 
     depends_on:
-      - servidor-bd:
-        condition:
-          - service_healthy
+      servidor-bd:
+        condition: service_healthy
 
     env_file:
       - .env
@@ -63,20 +67,21 @@ services:
     volumes:
       - .:/home/myapp
 
+    networks:
+      - red-cba
+
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: ["CMD", "curl", "-f", "http://localhost:5050"]
       interval: 10s
       timeout: 30s
       retries: 3
       start_period: 30s
 
 
-    networks:
-      - red-cba
-
 networks:
   red-cba:
     driver: bridge
+
 
 volumes:
   mysql-data:

@@ -1,0 +1,5 @@
+.env
+npm_data/
+npm_letsencrypt/
+__pycache__/
+*.pyc
