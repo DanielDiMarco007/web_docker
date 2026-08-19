@@ -12,23 +12,23 @@ def conectar():
     )
 
 
-
 @app.route('/')
 def index():
     conexion = conectar()
     cursor = conexion.cursor()
+    try:
+        cursor.execute("SELECT * FROM aprendices")
+        aprendices = cursor.fetchall()
 
-    cursor.execute("SELECT * FROM aprendices")
-    aprendices = cursor.fetchall()
+        return render_template(
+            "index.html",
+            aprendices=aprendices,
+            mensaje="Conexión exitosa a la base de datos!!!"
+        )
+    finally:
+        cursor.close()
+        conexion.close()
 
-    cursor.close()
-    conexion.close()
-
-    return render_template(
-        "index.html",
-        aprendices=aprendices,
-        mensaje=" Conexión exitosa a la base de datos!!!"
-    )
 
 @app.route('/registrar', methods=['POST'])
 def registrar():
@@ -38,22 +38,23 @@ def registrar():
 
     conexion = conectar()
     cursor = conexion.cursor()
+    try:
+        cursor.execute(
+            """
+            INSERT INTO aprendices
+            (nombre_completo, numero_documento, ficha)
+            VALUES (%s, %s, %s)
+            """,
+            (nombre, documento, ficha)
+        )
 
-    cursor.execute(
-        """
-        INSERT INTO aprendices
-        (nombre_completo, numero_documento, ficha)
-        VALUES (%s, %s, %s)
-        """,
-        (nombre, documento, ficha)
-    )
+        conexion.commit()
 
-    conexion.commit()
+        return redirect('/')
+    finally:
+        cursor.close()
+        conexion.close()
 
-    cursor.close()
-    conexion.close()
-
-    return redirect('/')
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5050, debug=True)

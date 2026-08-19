@@ -1,5 +1,4 @@
 services:
-
   nginx-proxy-manager:
     image: jc21/nginx-proxy-manager:latest
     container_name: proxy-manager
@@ -17,7 +16,6 @@ services:
     networks:
       - red-cba
 
-
   servidor-bd:
     image: mysql:8.0
     container_name: servidor-bd
@@ -29,8 +27,6 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
 
     ports:
       - "3306:3306"
@@ -46,7 +42,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
 
   app-backend:
     image: dimarco007/app-backend:v2
@@ -77,11 +72,26 @@ services:
       retries: 3
       start_period: 30s
 
+  uptime-kuma:
+    image: louislam/uptime-kuma:1.20.0
+    container_name: uptime-kuma
+    restart: always
+
+    ports:
+      - "3001:3001"
+
+    volumes:
+      - uptime-kuma-data:/app/data
+
+    networks:
+      - red-cba
 
 networks:
   red-cba:
     driver: bridge
 
-
 volumes:
   mysql-data:
+    name: mysql-data
+  uptime-kuma-data:
+    name: uptime-kuma-data
